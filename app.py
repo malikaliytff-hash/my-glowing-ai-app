@@ -34,7 +34,7 @@ elif "system_prompt" not in st.session_state:
     st.session_state.system_prompt = st.text_area("System Instructions:", "You are a helpful and expert AI assistant.")
     if st.button("Launch Chat"):
         genai.configure(api_key=st.session_state.api_key)
-        # Using the current industry-standard model
+        # Using the current, stable model identifier
         model = genai.GenerativeModel('gemini-3.5-flash')
         st.session_state.chat = model.start_chat(history=[])
         st.rerun()
@@ -58,33 +58,3 @@ else:
         
         with st.chat_message("assistant"):
             st.markdown(response.text)
-    st.subheader("Configure your AI")
-    st.session_state.system_prompt = st.text_area("Give special instructions to the AI:")
-    if st.button("Start Chatting"):
-        st.rerun()
-
-else:
-    # --- Main Chat Interface ---
-    st.sidebar.button("Reset Session", on_click=lambda: st.session_state.clear())
-    uploaded_file = st.file_uploader("Upload a file")
-    
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
-
-    if prompt := st.chat_input("What is on your mind?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Basic logic for Gemini integration
-        genai.configure(api_key=st.session_state.api_key)
-        model = genai.GenerativeModel('gemini-pro')
-        response = model.generate_content(f"{st.session_state.system_prompt}\n\n{prompt}")
-        
-        with st.chat_message("assistant"):
-            st.markdown(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
